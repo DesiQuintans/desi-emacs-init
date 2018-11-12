@@ -35,7 +35,7 @@ Enable third-party packages, initialise their settings, and set their keybinds.
 
 ## `init/snippets.el`
 
-Auto-replacing snippets for common bits of text that I use.
+Auto-replacing snippets for common bits of text. Of particular note is the 3,663 snippets that auto-correct words that are commonly misspelled, or correctly output foreign loan words that have accented letters. This comes from a large list that was first put together by Jim Biancolo in Autohotkey <http://www.biancolo.com/blog/autocorrect/>.
 
 ## `init/unicode-insertion.el`
 

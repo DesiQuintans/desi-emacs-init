@@ -83,6 +83,8 @@
 
 (setq org-tags-column -85)                  ; -ve value right-aligns tags.
 
+(setq org-support-shift-select t)           ; Allow shift-select in org.
+
 
 
 ;; # Org agenda view ------------------------------------------
