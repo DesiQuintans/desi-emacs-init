@@ -10,14 +10,49 @@
 
 
 
-;; # Org speed commands ---------------------------------------
+;; # Org behaviour --------------------------------------------
 
-;; When the cursor is at the start of a heading line (before any stars),
-;; you don't have to use the modifier keys to do stuff.
-(setq org-use-speed-commands nil)
+(setq org-use-speed-commands t)             ; Removes need for command prefix when mark is at start of heading
+
+(setq org-startup-indented t)               ; Makes structure easier to see
+(setq org-indent-indentation-per-level 4)   ; Indent levels by 4 chars
+
+(setq org-startup-folded 'content)          ; Unfold 1 level at startup
+(setq org-catch-invisible-edits 'error)     ; Don't edit folded regions
+(setq-default org-ellipsis " ←")            ; Replace fold indicator
+(setq-default org-cycle-separator-lines 1)  ; Preserve blank trailing lines when folded
+
+(setq org-M-RET-may-split-line t)           ; M-RET can split a line into a new heading or item
+
+(setq org-tags-column -85)                  ; -ve value right-aligns tags.
+
+(setq org-support-shift-select 'always)     ; Allow shift-select in org.
+
+
+
+;; # org refiling ---------------------------------------------
+
+;; https://dsdshcym.github.io/blog/2018/03/02/my-org-refile-workflow/
+
+(defun +org/opened-buffer-files ()
+  "Return the list of files currently opened in emacs"
+  (delq nil
+        (mapcar (lambda (x)
+                  (if (and (buffer-file-name x)
+                           (string-match "[0-9]\\{8\\}$"
+                                         (buffer-file-name x)))
+                      (buffer-file-name x)))
+                (buffer-list))))
+
+(setq org-refile-targets '((+org/opened-buffer-files :maxlevel . 4)))
+
+(setq org-outline-path-complete-in-steps t)
+
+
 
 ;; # Directories and default files ----------------------------
 
+(setq org-agenda-files (quote ("~/.emacs.d/documents/org/important_dates.org")))
 (setq org-directory "~/.emacs.d/documents/org")
 (setq org-default-notes-file "~.emacs.d/documents/org/misc.org")
 (setq org-journal-dir "~/.emacs.d/documents/journal/")
@@ -46,7 +81,6 @@
 (setq org-lowest-priority ?5)   ; Lowest priority 5 because I want to define 5 must-do items 
 (setq org-default-priority ?3)  ; Analogous to the default A-C with default B.
 
-
 (setq org-priority-start-cycle-with-default t)  ; Starts at 3. If nil, starts at 2 or 4.
 
 
@@ -66,24 +100,6 @@
         
         ("i" "Idea"    entry (file "~/.emacs.d/documents/org/dump_idea.org")
          "* %?\n\n%T")))
-
-
-
-;; # Indenting and appearance ---------------------------------
-
-(setq org-startup-indented t)               ; Makes structure easier to see
-(setq org-indent-indentation-per-level 4)   ; Indent levels by 4 chars
-
-(setq org-startup-folded 'content)          ; Unfold 1 level at startup
-(setq org-catch-invisible-edits 'error)     ; Don't edit folded regions
-(setq-default org-ellipsis " ←")            ; Replace fold indicator
-(setq-default org-cycle-separator-lines 1)  ; Preserve blank trailing lines when folded
-
-(setq org-M-RET-may-split-line t)           ; M-RET can split a line into a new heading or item
-
-(setq org-tags-column -85)                  ; -ve value right-aligns tags.
-
-(setq org-support-shift-select t)           ; Allow shift-select in org.
 
 
 

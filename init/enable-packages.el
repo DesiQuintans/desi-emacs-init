@@ -69,16 +69,6 @@
 
 
 
-;; # markdown-mode --------------------------------------------
-
-(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode)) ; Auto-open for .md
-
-(setq markdown-asymmetric-header t)  ; Hashes only on the left side of headers
-(setq markdown-indent-on-enter 'indent-and-new-item)  ; List continuation
-(setq markdown-coding-system 'utf-8)
-
-
-
 ;; # recentf --------------------------------------------------
 
 (require 'recentf)
@@ -99,10 +89,68 @@
 
 (setq split-width-threshold nil)  ; Apparently stops emacs from making new windows if current one is too big.
 
-(setq golden-ratio-auto-scale nil)  ; Makes golden-ratio aware of the frame size.
+(setq golden-ratio-auto-scale t)  ; Makes golden-ratio aware of the frame size.
 
 
 
-;; # dired ----------------------------------------------------
+;; # dired and related packages -------------------------------
 
-(setq dired-dwim-target t)
+(setq dired-dwim-target t)  ; If another dired window is open, use that window as the target for moving/copying/etc.
+
+(require 'dired-x)  ; Extended dired functions, including dired-do-find-marked-files.
+
+(require 'diredfl)
+(diredfl-global-mode 1)
+
+
+
+;; # yasnippet ------------------------------------------------
+
+;; Snippets are stored in .emacs.d/snippets.
+(require 'yasnippet)
+(yas-global-mode 1)
+
+
+
+;; # markdown-mode and other writing-related packages ---------
+
+(require 'wc-goal-mode)  ; Not auto-loaded, so needs to be required.
+(require 'adaptive-wrap)
+
+(require 'markdown-mode)
+(setq markdown-coding-system 'utf-8)
+(setq markdown-asymmetric-header t)  ; Hashes only on the left side of headers
+(setq markdown-indent-on-enter 'indent-and-new-item)  ; List continuation
+(setq markdown-italic-underscore t)  ; Use underscores for italics.
+(set-face-attribute 'markdown-code-face nil :inherit nil :background "black")  ; Default fontify is bright white bg and changed font.
+
+
+(require 'visual-fill-column)
+(setq-default visual-fill-column-center-text t)  ; Put the text in the middle of the frame, away from the edges.
+(setq-default visual-fill-column-width 90)  ; Different visual width from fill-column.
+(setq-default visual-fill-column-fringes-outside-margins nil)  ; Keep the rough ends within the max width.
+
+
+(defun writing-environment ()
+  (interactive)
+  "Set up my preferred Markdown writing environment. This is called as the 'auto-mode' so that many modes can be loaded at once."
+  (markdown-mode)               ; Writing and formatting
+  (cm-mode)                     ; CriticMarkup for annotating text
+  (move-text-default-bindings)  ; For rearranging paragraphs
+  (writegood-mode)              ; Identifying weasel words, passive voice, duplicates
+  (wc-goal-mode)                ; Word count and goal tracking
+  (visual-fill-column-mode)     ; Visual wrapping of lines
+  (adaptive-wrap-prefix-mode)   ; Maintain list indentation with visual wrapping
+  )
+
+
+(add-to-list 'auto-mode-alist '("\\.md\\'" . writing-environment))  ; Auto-open for .md
+(add-to-list 'auto-mode-alist '("\\.Rmd\\'" . writing-environment))  ; Auto-open for .md
+
+
+;; # draft-mode -----------------------------------------------
+
+;; I leave this to be manually toggled with M-x draft-mode.
+
+(with-eval-after-load "draft-mode"
+  (define-key draft-mode-map [remap undo] 'end-of-buffer))

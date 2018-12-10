@@ -7,7 +7,7 @@
 (require 'package)
 ;;(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives
-             '("melpa-stable" . "http://stable.melpa.org/packages/")
+             '("melpa-stable" . "https://stable.melpa.org/packages/")
              t)
 (package-initialize)
 
@@ -20,7 +20,7 @@
 ; https://camdez.com/blog/2015/04/03/switching-to-melpa-stable/
 
 (defvar my/packages
-  '(draft-mode golden-ratio ido-completing-read+ markdown-mode monokai-theme multiple-cursors persp-mode smex org-journal))
+  '(draft-mode golden-ratio ido-completing-read+ markdown-mode monokai-theme multiple-cursors persp-mode smex org-journal diredfl cm-mode yasnippet move-text wc-goal-mode writegood-mode adaptive-wrap))
 
 (require 'cl-lib)
 
@@ -46,10 +46,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files (quote ("~/.emacs.d/documents/org/important_dates.org")))
  '(package-selected-packages
    (quote
-    (golden-ratio ido-completing-read+ smex persp-mode multiple-cursors monokai-theme markdown-mode draft-mode))))
+    (adaptive-wrap visual-fill-column writegood-mode wc-goal-mode cm-mode yasnippet golden-ratio ido-completing-read+ smex persp-mode multiple-cursors monokai-theme markdown-mode draft-mode))))
 
 
 

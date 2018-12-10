@@ -1,6 +1,8 @@
 ;; # Frame setup ----------------------------------------------
 
 (tool-bar-mode 0)                     ; No graphical toolbar
+(scroll-bar-mode 0)                   ; No scrollbar (it's a distracting bright white)
+(menu-bar-mode 0)                     ; No menu bar (File, Edit, Options, etc.)
 (setq inhibit-startup-screen t)       ; No splash on start-up
 
 (column-number-mode t)                ; Column number in info area
@@ -40,7 +42,7 @@
 (setq-default cua-keep-region-after-copy t)   ; Don't cancel highlighting after copying
 (delete-selection-mode 1)                     ; Overwrite or delete selected region
 
-(setq-default fill-column 89)                 ; M-q wraps at word boundaries at 90 chars
+(setq-default fill-column 79)                 ; M-q wraps at word boundaries at 80 chars
 (setq-default sentence-end-double-space nil)  ; M-q sees single-spaced full stops
 (setq-default require-final-newline t)        ; Always end files with newline
 
