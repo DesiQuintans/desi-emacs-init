@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: TODO CriticMarkup comment
+# key: [todo
+# --
+{>> **:TODO: $1** <<}$0

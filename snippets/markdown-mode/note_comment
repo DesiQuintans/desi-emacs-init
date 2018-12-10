@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: NOTE CriticMarkup comment
+# key: [note
+# --
+{>> **:NOTE: $1** <<}$0

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: CITE CriticMarkup comment
+# key: [cite
+# --
+{>> **:CITE: $1** <<}$0

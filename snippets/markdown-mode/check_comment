@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: CHECK CriticMarkup comment
+# key: [check
+# --
+{>> **:CHECK: $1** <<}$0
