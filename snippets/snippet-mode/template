@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: Snippet template
+# key: template
+# --
+
+# -*- mode: snippet -*-
+# Documentation: https://joaotavora.github.io/yasnippet/snippet-development.html#orgd710184
+# name: 
+# key: 
+# expand-env: ((yas-indent-line 'auto) (yas-wrap-around-region 'nil))
+# --

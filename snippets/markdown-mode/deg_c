@@ -2,4 +2,4 @@
 # name: Degrees Celsius
 # key: *c
 # --
- °C
+`(delete-backward-char 1)` °C

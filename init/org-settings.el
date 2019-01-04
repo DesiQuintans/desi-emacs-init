@@ -1,4 +1,4 @@
-;; # org-mode packages ----------------------------------------
+﻿;; # org-mode packages ----------------------------------------
 
 (require 'org-journal)  ; A new org file every day
 
@@ -24,16 +24,18 @@
 
 (setq org-M-RET-may-split-line t)           ; M-RET can split a line into a new heading or item
 
-(setq org-tags-column -85)                  ; -ve value right-aligns tags.
+(setq org-tags-column -80)                  ; -ve value right-aligns tags.
 
-(setq org-support-shift-select 'always)     ; Allow shift-select in org.
+(setq org-support-shift-select t)     ; Allow shift-select in org. 'always turns off all org-mode shift-contexts. t keeps as many contexts as possible.
 
+(setq org-list-allow-alphabetical t)  ; Allow alphabetical bullets in plain lists.
 
+(setq org-hide-emphasis-markers t)  ; Hide marks for /italic/, *bold*, etc.
 
 ;; # org refiling ---------------------------------------------
 
 ;; https://dsdshcym.github.io/blog/2018/03/02/my-org-refile-workflow/
-
+;; This lets headings be refiled amongst all open org-journal entries.
 (defun +org/opened-buffer-files ()
   "Return the list of files currently opened in emacs"
   (delq nil
@@ -61,7 +63,11 @@
 
 ;; # Tags and keywords ----------------------------------------
 
-(setq org-tag-alist '(("work" . ?w) ("home" . ?h) ("outside" . ?o) ("rpackage" . ?r) ("librarian" . ?l) ("desiderata" . ?d) ("buy" . ?b) ("site" . ?s) ("DC1" . ?z) ("DC2" . ?x) ("DC3" . ?c) ("DC4" . ?v) ("PhD" . ?p) ("travel" . ?t)))
+(setq org-tag-alist '(("home" . ?h) ("outside" . ?o) ("travel" . ?t) 
+                      ("librarian" . ?l) ("desiderata" . ?d)
+                      ("work" . ?w) ("site" . ?s) ("buy" . ?b) ("PhD" . ?p) 
+                      ("DC1" . ?z) ("DC2" . ?x) ("DC3" . ?c) ("DC4" . ?v)
+                      ("rough" . ?r) ("coherent" . ?k) ("polish" . ?f)))
 
 (setq org-todo-keywords
     '((sequence "TODO(t)" "WAIT(w)" "LIST(l)" "|" "STOP(s)" "DONE(d)")))
@@ -71,7 +77,7 @@
        ;; STOP  This task doesn't need to be done (e.g. no longer important).
        ;; DONE  The task is finished.
 
-(setq-default org-log-done 'note)  ; 'time = Log the current time when closing a task
+(setq-default org-log-done 'time)  ; 'time = Log the current time when closing a task
 
 
 
@@ -112,3 +118,9 @@
 (setq org-agenda-start-on-weekday 1)  ; week starts on Monday
 
 (setq org-agenda-skip-scheduled-if-done 1)  ; Don't show DONE items in agenda view.
+
+
+
+;; # Org habits -----------------------------------------------
+
+(add-to-list 'org-modules 'org-habit t)

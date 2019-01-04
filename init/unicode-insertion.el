@@ -27,4 +27,5 @@
 (define-key key-translation-map (kbd "<f8> <down>")  (kbd "↓"))  ; down arrow
 
 (define-key key-translation-map (kbd "<f8> x")  (kbd "×"))  ; multiplication sign
+(define-key key-translation-map (kbd "<f8> /")  (kbd "÷"))  ; division sign
 (define-key key-translation-map (kbd "<f8> +")  (kbd "±"))  ; plus-minus sign

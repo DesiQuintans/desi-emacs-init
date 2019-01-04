@@ -2,4 +2,4 @@
 # name: CHECK CriticMarkup comment
 # key: [check
 # --
-{>> **:CHECK: $1** <<}$0
+{>> :CHECK: $1 <<}$0

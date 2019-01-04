@@ -1,79 +1,87 @@
-;; # ido ------------------------------------------------------
+;; # display-time ---------------------------------------------
 
-(ido-mode t)        ; Autocomplete in file/buffer selections
-(ido-everywhere 1)  ; In as many places as possible.
+(setq display-time-format "%F %R"
+      display-time-interval 10
+      display-time-default-load-average nil
+      display-time-load-average-threshold 1000)
 
-
-
-;; # ido-completing-read-plus ---------------------------------
-
-(require 'ido-completing-read+)
-(ido-ubiquitous-mode 1)  ; ido auto-completion in even more places
+(display-time-mode 1)
 
 
 
-;; # multiple-cursors -----------------------------------------
+;; # ivy / counsel / swiper -----------------------------------
 
-(define-key my-mode-map (kbd "C->") #'mc/mark-next-like-this)
-(define-key my-mode-map (kbd "C-<") #'mc/mark-previous-like-this)
-(define-key my-mode-map (kbd "C-S-M-m") #'mc/mark-all-dwim)
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(setq enable-recursive-minibuffers t)
+(setq ivy-extra-directories nil)
+(setq ivy-use-selectable-prompt t)  ; Stop auto-completing by pressing UP to select the prompt line.
+(setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))  ; Searches start with ^ by default, enforcing an initial word anyway.
 
+;; # undo-tree ------------------------------------------------
 
-
-;; # org-journal ----------------------------------------------
-
-;; I want to add journal entries manually instead of having one made
-;; automatically when I first access the day's journal page. This function
-;; creates/shows the journal page but does not create a time-stamped heading.
-;; New time entries should be added using org-capture (C-c c j).
-;; https://stackoverflow.com/a/12829884/5578429
-(defun just-show-org-journal ()
-  (interactive)
-  (let ((current-prefix-arg 'nothing)) ;; emulate C-u
-    (call-interactively 'org-journal-new-entry) ;; invoke align-regexp interactively
-    )
-  )
-
-;;(global-set-key (kbd "C-c j") 'just-show-org-journal)
-(global-set-key (kbd "C-c j") 'org-journal-new-entry)  ; Default behaviour
+(require 'undo-tree)
+(global-undo-tree-mode)  ; Replace undo system with a tree system
 
 
 
 ;; # persp-mode -----------------------------------------------
 
 (with-eval-after-load "persp-mode-autoloads"
-  ;(setq wg-morph-on nil) ;; switch off animation
+  (setq wg-morph-on nil) ;; switch off animation
   (setq persp-autokill-buffer-on-remove 'kill-weak)
   (setq persp-kill-foreign-buffer-behaviour 'dont-ask-weak)
   (add-hook 'after-init-hook #'(lambda () (persp-mode 1))))
   
 (with-eval-after-load "persp-mode"
-  (setq persp-interactive-completion-function #'ido-completing-read)
+  (setq persp-interactive-completion-function #'ivy-completing-read)
+  (define-key my-mode-map (kbd "C-x C-b")
+    #'(lambda (arg)
+        (interactive "P")
+        (with-persp-buffer-list () (bs-show arg))))
   (define-key my-mode-map (kbd "C-x b") #'persp-switch-to-buffer)
   (define-key my-mode-map (kbd "C-x k") #'persp-kill-buffer)
-  (define-key my-mode-map (kbd "C-/") #'persp-next)
-  (persp-set-ido-hooks t))  ; ido only shows buffers in perspective
-  
-  ;; (global-set-key (kbd "C-x b") #'persp-switch-to-buffer)
-  ;; (global-set-key (kbd "C-x k") #'persp-kill-buffer))
- 
+  (define-key my-mode-map (kbd "C-/") #'persp-next))
+
+;; https://gist.github.com/Bad-ptr/1aca1ec54c3bdb2ee80996eb2b68ad2d#file-persp-ivy-el
+(with-eval-after-load "persp-mode"
+  (with-eval-after-load "ivy"
+    (add-hook 'ivy-ignore-buffers
+              #'(lambda (b)
+                  (when persp-mode
+                    (let ((persp (get-current-persp)))
+                      (if persp
+                          (not (persp-contain-buffer-p b persp))
+                        nil)))))
+
+    (setq ivy-sort-functions-alist
+          (append ivy-sort-functions-alist
+                  '((persp-kill-buffer   . nil)
+                    (persp-remove-buffer . nil)
+                    (persp-add-buffer    . nil)
+                    (persp-switch        . nil)
+                    (persp-window-switch . nil)
+                    (persp-frame-switch . nil))))))
+
+
+;; # hl-line-mode ---------------------------------------------
+
+;; Some modes really benefit from having highlighted lines.
+(add-hook 'tabulated-list-mode-hook 'hl-line-mode)  ; e.g. list-packages
+(add-hook 'bs-mode-hook 'hl-line-mode)  ; bs-show
 
 
 ;; # smex -----------------------------------------------------
 
 (smex-initialize) ; Autocomplete in M-x
-
-(define-key my-mode-map (kbd "M-x") #'smex)
-(define-key my-mode-map (kbd "M-S-x") #'smex-major-mode-commands)
-(define-key my-mode-map (kbd "C-M-S-x") #'execute-extended-command) ;; Old M-x.
-
+(setq smex-save-file "~/.emacs.d/.smex-items")
 
 
 ;; # recentf --------------------------------------------------
 
 (require 'recentf)
 (recentf-mode 1)
-
+(setq recentf-exclude '("\\.emacs\\.d"))  ; Emacs files are always open anyway.
 
 
 ;; # golden-ratio ---------------------------------------------
@@ -81,26 +89,43 @@
 ;; https://truongtx.me/2014/11/15/auto-resize-windows-by-golden-ratio-in-emacs
 
 (require 'golden-ratio)
-(golden-ratio-mode 1)  ; Resizes the active window so that its contents fit comfortably inside.
+(golden-ratio-mode 1)  ; Resizes the active window dynamically.
 
 
-(setq golden-ratio-exclude-modes '("ediff-mode"     ; Exclude certain kinds of windows from resizing.
-                                   "eshell-mode"))  ; dired-mode
-
-(setq split-width-threshold nil)  ; Apparently stops emacs from making new windows if current one is too big.
+(setq golden-ratio-exclude-modes '("ediff-mode"
+                                   "eshell-mode"))
 
 (setq golden-ratio-auto-scale t)  ; Makes golden-ratio aware of the frame size.
 
 
 
+;; # window-jump  ---------------------------------------------
+
+(require 'window-jump)
+
+
+
 ;; # dired and related packages -------------------------------
+
+(require 'dired-x)  ; Extended dired functions, including dired-do-find-marked-files.
+(require 'diredfl)
+(require 'w32-browser)  ; Open files using default app in Windows
+
+(diredfl-global-mode 1)
 
 (setq dired-dwim-target t)  ; If another dired window is open, use that window as the target for moving/copying/etc.
 
-(require 'dired-x)  ; Extended dired functions, including dired-do-find-marked-files.
+;; Auto-refresh dired quietly.
+(setq global-auto-revert-non-file-buffers t
+      auto-revert-verbose nil)
+(add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode)
 
-(require 'diredfl)
-(diredfl-global-mode 1)
+(eval-after-load "w32-browser"
+  '(progn
+    (define-key dired-mode-map [(control return)] 'dired-w32explore)
+    (define-key dired-mode-map [(meta return)] 'dired-w32-browser)
+    (define-key dired-mode-map [mouse-2] 'dired-mouse-w32-browser)
+    (define-key dired-mode-map (kbd "<C-M-return>") 'dired-multiple-w32-browser)))
 
 
 
@@ -108,49 +133,91 @@
 
 ;; Snippets are stored in .emacs.d/snippets.
 (require 'yasnippet)
+(require 'warnings)
 (yas-global-mode 1)
 
+;; Allow lisp code to edit the buffer. E.g. delete backwards to replace characters.
+(add-to-list 'warning-suppress-types '(yasnippet backquote-change))
 
 
-;; # markdown-mode and other writing-related packages ---------
 
-(require 'wc-goal-mode)  ; Not auto-loaded, so needs to be required.
-(require 'adaptive-wrap)
+;; # helpful (C-h replacements) -------------------------------
 
-(require 'markdown-mode)
-(setq markdown-coding-system 'utf-8)
-(setq markdown-asymmetric-header t)  ; Hashes only on the left side of headers
-(setq markdown-indent-on-enter 'indent-and-new-item)  ; List continuation
-(setq markdown-italic-underscore t)  ; Use underscores for italics.
-(set-face-attribute 'markdown-code-face nil :inherit nil :background "black")  ; Default fontify is bright white bg and changed font.
+(require 'helpful)
+(require 'elisp-demos)
 
+; Add examples to Help buffers
+(advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update)
 
-(require 'visual-fill-column)
-(setq-default visual-fill-column-center-text t)  ; Put the text in the middle of the frame, away from the edges.
-(setq-default visual-fill-column-width 90)  ; Different visual width from fill-column.
-(setq-default visual-fill-column-fringes-outside-margins nil)  ; Keep the rough ends within the max width.
+(setq helpful-max-buffers 5)
 
 
-(defun writing-environment ()
+;; # expand-region --------------------------------------------
+
+(require 'expand-region)
+
+
+
+;; # delight (edit the mode line) -----------------------------
+
+(require 'delight)
+(delight '((golden-ratio-mode nil    golden-ratio)
+           (ivy-mode          nil    ivy)
+           (abbrev-mode       nil    abbrev)
+           (eldoc-mode        nil    eldoc)
+           (yas-minor-mode    nil    yasnippet)
+           (visual-line-mode  " vlm" simple)))
+
+
+
+;; # stupid-indent-mode ---------------------------------------
+
+(require 'stupid-indent-mode)
+(setq stupid-indent-level 4)
+
+
+
+;; # ahk-mode -------------------------------------------------
+
+(defun ahk-modes ()
+  "Set up my preferred modes for Autohotkey editing."
   (interactive)
-  "Set up my preferred Markdown writing environment. This is called as the 'auto-mode' so that many modes can be loaded at once."
-  (markdown-mode)               ; Writing and formatting
-  (cm-mode)                     ; CriticMarkup for annotating text
-  (move-text-default-bindings)  ; For rearranging paragraphs
-  (writegood-mode)              ; Identifying weasel words, passive voice, duplicates
-  (wc-goal-mode)                ; Word count and goal tracking
-  (visual-fill-column-mode)     ; Visual wrapping of lines
-  (adaptive-wrap-prefix-mode)   ; Maintain list indentation with visual wrapping
-  )
+  (ahk-mode)
+  (stupid-indent-mode))
+  
+
+(add-to-list 'auto-mode-alist '("\\.ahk\\'"  . ahk-modes))
 
 
-(add-to-list 'auto-mode-alist '("\\.md\\'" . writing-environment))  ; Auto-open for .md
-(add-to-list 'auto-mode-alist '("\\.Rmd\\'" . writing-environment))  ; Auto-open for .md
+
+;; # view large files ----------------------- ------------------
+
+(require 'vlf-setup)
+;; The package will automatically detect a large file and offer
+;; to load it with vlf.
 
 
-;; # draft-mode -----------------------------------------------
 
-;; I leave this to be manually toggled with M-x draft-mode.
+;; # regex packages -------------------------------------------
 
-(with-eval-after-load "draft-mode"
-  (define-key draft-mode-map [remap undo] 'end-of-buffer))
+;; Try to use PCRE syntax everywhere in Emacs (it will announce "PCRE regexp"
+;; in the minibuffer). Note that Swiper/Ivy won't use this because they have
+;; their own fuzzy searching regex builder.
+(require 'pcre2el)
+(pcre-mode t)
+
+;; Show regex matches and replacements in real-time inside the buffer.
+(require 'visual-regexp)
+(require 'visual-regexp-steroids)
+(setq vr/engine 'pcre2el)  ; Use pcre2el because way faster than Python.
+
+
+;; # which-key ------------------------------------------------
+
+(require 'which-key)
+(which-key-mode)
+
+
+;; # magit ----------------------------------------------------
+
+(setq magit-git-executable "C:/Dropbox/Apps/PortableGit/mingw32/bin/git.exe")

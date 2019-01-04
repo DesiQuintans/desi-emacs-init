@@ -2,4 +2,4 @@
 # name: INSERT CriticMarkup comment
 # key: [ins
 # --
-{>> **:INSERT: $1** <<}$0
+{>> :INSERT: $1 <<}$0

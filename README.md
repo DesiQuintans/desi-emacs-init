@@ -33,6 +33,10 @@ Rebind some core Emacs and built-in package commands, but try to preserve as man
 
 Enable third-party packages, initialise their settings, and set their keybinds.
 
+## `init/write-env.el`
+
+Sets up my prose writing environment. Markdown, CriticMarkup, word count goals, linter, visual improvements like a screen-centered text column, and others.
+
 ## `init/snippets.el`
 
 Auto-replacing snippets for common bits of text. Of particular note is the 3,663 snippets that auto-correct words that are commonly misspelled, or correctly output foreign loan words that have accented letters. This comes from a large list that was first put together by Jim Biancolo in Autohotkey <http://www.biancolo.com/blog/autocorrect/>.

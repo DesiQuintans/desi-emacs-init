@@ -12,7 +12,7 @@
   ;; `fundamental-mode' buffers even after doing \"(global-my-mode 1)\".
   ;; More info: http://emacs.stackexchange.com/q/16693/115
   :init-value t
-  :lighter " desi-keys"
+  :lighter " dk"
   :keymap my-mode-map)
 
 ;;;###autoload

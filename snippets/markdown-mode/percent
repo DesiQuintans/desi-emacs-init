@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Percent symbol
+# key: %
+# --
+`(delete-backward-char 1)` %

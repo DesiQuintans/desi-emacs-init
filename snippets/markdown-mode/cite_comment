@@ -2,4 +2,4 @@
 # name: CITE CriticMarkup comment
 # key: [cite
 # --
-{>> **:CITE: $1** <<}$0
+{>> :CITE: $1 <<}$0
